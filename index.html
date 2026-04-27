@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peanuts.bebe 專用換算</title>
+    <style>
+        :root {
+            --primary-color: #C1A58D; 
+            --bg-color: #F9F7F3;
+            --text-color: #4A4A4A;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 24px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        #result-section {
+            display: none;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 2px dashed #eee;
+        }
+        .price-display {
+            font-size: 36px;
+            color: #d9534f;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🧸 上架價格換算</h2>
+    
+    <div class="form-group">
+        <label for="krwPrice">輸入韓幣價格 (₩)</label>
+        <input type="number" id="krwPrice" placeholder="例如：15000">
+    </div>
+
+    <button onclick="calculatePrice()">計算台幣售價</button>
+
+    <div id="result-section">
+        <label>台幣上架定價：</label>
+        <div class="price-display" id="finalPrice">$0</div>
+    </div>
+</div>
+
+<script>
+    function calculatePrice() {
+        const krwInput = document.getElementById('krwPrice').value;
+        
+        if (!krwInput) {
+            alert('請先輸入韓幣價格喔！');
+            return;
+        }
+
+        const krw = parseFloat(krwInput);
+        
+        // 公式：韓幣 * 1.03 / 41 * 1.6 (自動四捨五入至整數)
+        const finalPrice = Math.round((krw * 1.03 / 41) * 1.6);
+
+        // 顯示結果
+        document.getElementById('finalPrice').innerText = 'NT$ ' + finalPrice;
+        
+        // 展開結果區塊
+        document.getElementById('result-section').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
