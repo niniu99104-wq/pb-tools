@@ -43,50 +43,52 @@
         button:hover { opacity: 0.9; }
         button:disabled { background-color: #cccccc; cursor: not-allowed; }
         
-        /* 區隔線 */
-        hr { border: 0; height: 1px; background: #eee; margin: 20px 0; }
+        hr { border: 0; height: 1px; background: #eee; margin: 25px 0; }
 
         #report-section {
             display: none;
             margin-top: 24px;
             padding-top: 24px;
             border-top: 2px dashed #eee;
+            background-color: #fffaf5;
+            padding: 15px;
+            border-radius: 8px;
         }
         .price-display {
             font-size: 32px; color: #d9534f; font-weight: bold; margin: 10px 0;
         }
         .btn-submit { background-color: #8D99AE; margin-top: 10px;}
+        .hint { font-size: 12px; color: #999; margin-top: -15px; margin-bottom: 15px; display: block; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🧸 換算與上架回報</h2>
+    <h2>🧸 價格換算與回報</h2>
     
-    <!-- 身分輸入區 -->
     <div class="form-group">
-        <label>👤 小幫手名稱 / 編號</label>
-        <input type="text" id="helperName" placeholder="請輸入你的代號">
-    </div>
-    
-    <hr>
-
-    <!-- 換算區塊 -->
-    <div class="form-group">
-        <label>輸入韓幣價格 (₩)</label>
+        <label>1. 輸入韓幣價格 (₩)</label>
         <input type="number" id="krwPrice" placeholder="例如：15000">
     </div>
-    <button onclick="calculatePrice()">計算台幣售價</button>
+    <button onclick="calculatePrice()">立即換算台幣</button>
 
-    <!-- 換算結果與回報區塊 -->
     <div id="report-section">
         <label>台幣上架定價：</label>
         <div class="price-display" id="finalPrice">$0</div>
         
-        <div class="form-group" style="margin-top: 20px;">
+        <hr>
+        <p style="font-size: 14px; color: var(--primary-color); font-weight: bold;">填寫下方資訊以送出紀錄 (小幫手專用)</p>
+
+        <div class="form-group">
+            <label>👤 小幫手名稱 / 編號</label>
+            <input type="text" id="helperName" placeholder="請輸入你的代號">
+        </div>
+
+        <div class="form-group">
             <label>商品名稱 / 貨號</label>
             <input type="text" id="productName" placeholder="例如：秋季碎花洋裝 A01">
         </div>
+        
         <div class="form-group">
             <label>官網上架網址</label>
             <input type="text" id="productLink" placeholder="貼上完成上架的網址">
@@ -97,22 +99,18 @@
 </div>
 
 <script>
-    // ！！！請把下面單引號裡面的文字，換成你 Google Apps Script 部署出來的 Web App URL ！！！
+    // 妳部署好的 API 網址
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7URKoxNzd7p7Qgs3txTVzMjNWszfMMIDa2E4CuxBF3Y9jdAUminTY0xAJJzNmG-JA/exec';
 
     let currentKrw = 0;
     let currentTwd = 0;
 
+    // 修改後：單純換算功能，不檢查名字
     function calculatePrice() {
-        const helperName = document.getElementById('helperName').value;
         const krwInput = document.getElementById('krwPrice').value;
 
-        if (!helperName) {
-            alert('請先輸入小幫手名稱或編號！');
-            return;
-        }
         if (!krwInput) {
-            alert('請輸入韓幣價格！');
+            alert('請先輸入韓幣價格！');
             return;
         }
 
@@ -121,14 +119,21 @@
         currentTwd = Math.round((currentKrw * 1.03 / 41) * 1.6);
 
         document.getElementById('finalPrice').innerText = 'NT$ ' + currentTwd;
+        
+        // 顯示回報區塊（如果妳只是想看價格，看到這裡就可以了）
         document.getElementById('report-section').style.display = 'block';
     }
 
+    // 只有送出紀錄時才檢查所有欄位
     function submitRecord() {
         const helperName = document.getElementById('helperName').value;
         const productName = document.getElementById('productName').value;
         const productLink = document.getElementById('productLink').value;
 
+        if (!helperName) {
+            alert('小幫手，請填寫妳的名稱或編號才能回報喔！');
+            return;
+        }
         if (!productName || !productLink) {
             alert('商品名稱與網址都要填寫喔！');
             return;
@@ -152,7 +157,7 @@
         })
         .then(response => {
             alert('✅ 紀錄已成功送出！');
-            // 清空商品資訊，但保留小幫手名稱，方便連續作業
+            // 清空商品資訊，保留小幫手名稱方便連續作業
             document.getElementById('krwPrice').value = '';
             document.getElementById('productName').value = '';
             document.getElementById('productLink').value = '';
@@ -162,7 +167,7 @@
             submitBtn.disabled = false;
         })
         .catch(error => {
-            alert('❌ 發生錯誤，請檢查網址設定或網路狀態。');
+            alert('❌ 發生錯誤，請檢查網路狀態。');
             submitBtn.innerText = '✅ 已上架，送出紀錄';
             submitBtn.disabled = false;
         });
